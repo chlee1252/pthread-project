@@ -1,0 +1,63 @@
+Marc Lee (Changhwan Lee)
+duck id: clee3
+
+In the tar file,
+bounded_queue.c                   - defined bounded_queue
+bounded_queue.h
+p1fxns.c                          - helper function to get sentence tokenize
+p1fxns.h                         
+thread_safe_bounded_queue.c       - defined Thread safe bounded_queue
+thread_safe_bounded_queue.h
+threadfxn.c                       - defined thread function for part2
+threadfxn.h
+threadfxn_p4.c                    - defined thread functions for part4
+threadfxn_p4.h
+topicqueue.c                      - defined topic queues enqueue create getentry dequeue cleanqueue and test functions 
+topicqueue.h
+part1.c
+part2.c
+part3.c                           - defined modified version of cleanup for this part
+part4.c
+part5.c                           - defined modified version of subscriber functions to create html                
+README
+Makefile
+
+How to run:
+	1. make 
+	
+	2. part1: ./part1
+	   part2: ./part2
+	   part3: ./part3 [commands_file]
+	   part4: ./part4 [commands_file]
+	   part5: ./part5 [commands_file]
+
+For testfiles, to create topic, index starting from 0...n
+For file for the publisher thread, topic ID should start from 1...n
+
+Part1 - it compiles it and work correctly (Checked it on VM machine arch linux)
+Part2 - it compiles it and work correctly (Chekced it on VM machine arch linux)
+Part3 - it compiles it and work correctly (Chekced it on VM machine arch linux)
+Part4 - it compiles it and work correctly (Chekced it on VM machine arch linux)
+Part5 - it compiles it and work correctly (Chekced it on VM machine arch linux)
+
+For part1, to pass the valgrind test using Roscoe's bq_test.c I have to set
+	queue->buffer[RoundIDToBufferIndex(queue->size, queue->tail)] = NULL;
+
+but, to pass the valgrind test using my testcases and other parts, I have to set
+	free(queue->buffer[RoundIDToBufferIndex(queue->size, queue->tail)]);
+
+For part4/5 I give clean up thread to sleep for 4 seconds to give
+publisher/subscriber little time to work. Otherwise, base on the delta time,
+subscriber do not have time to access the item.
+
+Also, for part4/5, normal usage has no problem with sleeptime,
+but when I use valgrind, then sometimes cleanup thread came in faster than the 
+subscriber, so subscriber reads id+1 element.
+
+For pub/sub threads, Since my new test file have little odd sleeping time, getitem failed.
+So I gave them a maximum 6 tries when queue is EMPTY, FULL and Getitem Failed. so that pub/sub/cleanup do the work.
+
+After 6 tries, it frees all the alloc memory and exit the thread.
+
+./valtest 1,2,3,4,5 has no memeory leaks in any circumstances.
+
